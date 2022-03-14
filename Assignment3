@@ -1,0 +1,67 @@
+
+					
+
+
+
+
+                 
+
+
+
+create table E_Commerce_company(
+Visitor_ID int NOT NULL, 
+Adv_Type [nvarchar](50) NULL , 
+Actions [nvarchar](50) NULL);
+INSERT INTO  E_Commerce_company values (1, 'A', 'Left'),
+                                                           ( 2, 'A', 'Order'),
+                                                            (3, 'B', 'Left'),
+                                                            (4, 'A', 'Order'),
+                                                           ( 5, 'A', 'Review'),
+                                                           ( 6, 'A', 'Left'),
+                                                           ( 7, 'B', 'Left'),
+                                                           ( 8, 'B', 'Order'),
+                                                           ( 9, 'B', 'Review'),
+                                                            (10, 'A', 'Review' )
+
+
+​
+select * from E_Commerce_company
+
+​
+/*
+SELECT Adv_Type, Actions  ,  COUNT(Adv_Type) Adv_Type_Count
+FROM E_Commerce_company 
+GROUP BY Adv_Type, Actions
+ORDER BY Adv_Type;  
+*/
+
+---- Retrieve count of total Actions and Orders for each Advertisement Type,
+​
+
+SELECT Adv_Type , SUM(CASE WHEN Actions = 'Left' THEN 1 ELSE  0 END) AS lefts,
+                  SUM(CASE WHEN Actions = 'Order' THEN 1 ELSE 0 END) AS orders,
+                  SUM(CASE WHEN Actions= 'Review' THEN 1 ELSE 0 END )AS reviews
+   
+FROM E_Commerce_company 
+GROUP BY Adv_Type
+
+
+---Calculate Orders (Conversion) rates for each Advertisement Type by dividing by total count of actions casting as float by multiplying by 1.0.
+
+
+
+;WITH T1 as(
+SELECT Adv_Type , SUM(CASE WHEN Actions = 'Left' THEN 1 ELSE  0 END) AS lefts,
+                  SUM(CASE WHEN Actions = 'Order' THEN 1 ELSE 0 END) AS orders,
+                  SUM(CASE WHEN Actions= 'Review' THEN 1 ELSE 0 END )AS reviews
+   
+FROM E_Commerce_company 
+GROUP BY Adv_Type)
+
+--select * from T1 
+
+select Adv_Type,  1.0 * orders/(lefts + orders + reviews) as Conversion_Rate
+from T1
+
+
+
